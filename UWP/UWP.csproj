@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Speech.cs" />
     <Compile Include="SpeechLanguage.cs" />
+    <Compile Include="SpeechRecognizer.cs" />
     <Compile Include="SpeechSettings.cs" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" Condition="Exists('..\Shared\Shared.projitems')" />

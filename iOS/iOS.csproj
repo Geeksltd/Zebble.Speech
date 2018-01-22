@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Speech.cs" />
     <Compile Include="SpeechLanguage.cs" />
+    <Compile Include="SpeechRecognizer.cs" />
     <Compile Include="SpeechSettings.cs" />
   </ItemGroup>
   <ItemGroup>
