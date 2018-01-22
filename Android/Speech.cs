@@ -1,10 +1,10 @@
 ﻿namespace Zebble.Device
 {
-    using System;
-    using System.Threading.Tasks;
     using Android.App;
     using Android.Runtime;
     using Android.Speech.Tts;
+    using System;
+    using System.Threading.Tasks;
 
     public partial class Speech
     {

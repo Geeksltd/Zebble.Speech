@@ -1,9 +1,9 @@
 ﻿namespace Zebble.Device
 {
+    using AVFoundation;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using AVFoundation;
 
     partial class SpeechLanguage
     {

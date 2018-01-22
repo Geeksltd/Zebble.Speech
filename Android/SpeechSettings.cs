@@ -1,7 +1,7 @@
 ﻿namespace Zebble.Device
 {
-    using System.Linq;
     using Java.Util;
+    using System.Linq;
 
     partial class SpeechSettings
     {

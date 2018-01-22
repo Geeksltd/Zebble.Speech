@@ -2,7 +2,6 @@
 {
     using AVFoundation;
     using System.Linq;
-    using Zebble.Device;
 
     partial class SpeechSettings
     {

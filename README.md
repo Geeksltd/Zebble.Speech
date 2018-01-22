@@ -5,12 +5,12 @@
 
 ![logo]
 
-To get the device operating system to read a piece of text out loud in Zebble apps.
+A Zebble plugin To get the device operating system to read a piece of text out loud or recongnize the spoken words.
 
 
 [![NuGet](https://img.shields.io/nuget/v/Zebble.Speech.svg?label=NuGet)](https://www.nuget.org/packages/Zebble.Speech/)
 
-> Speech make you able to read piece of text in lots of language by accessing to operation system ability and setting some setting to control volume and speed of reading of machine.
+> With the user's permission, get recognition of live and prerecorded speech, and receive transcriptions. Also you'll be able to convert text to spoken language.
 
 <br>
 
