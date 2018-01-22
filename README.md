@@ -1,14 +1,14 @@
-﻿[logo]: https://raw.githubusercontent.com/Geeksltd/{Plugin.Name}/master/Shared/NuGet/Icon.png "{Plugin.Name}"
+﻿[logo]: https://raw.githubusercontent.com/Geeksltd/Zebble.Speech/master/Shared/NuGet/Icon.png "Zebble.Speech"
 
 
-## {Zebble.Speech}
+## Zebble.Speech
 
 ![logo]
 
 To get the device operating system to read a piece of text out loud in Zebble apps.
 
 
-[![NuGet](https://img.shields.io/nuget/v/{Plugin.Name}.svg?label=NuGet)](https://www.nuget.org/packages/{Plugin.Name}/)
+[![NuGet](https://img.shields.io/nuget/v/Zebble.Speech.svg?label=NuGet)](https://www.nuget.org/packages/Zebble.Speech/)
 
 > Speech make you able to read piece of text in lots of language by accessing to operation system ability and setting some setting to control volume and speed of reading of machine.
 
@@ -16,7 +16,7 @@ To get the device operating system to read a piece of text out loud in Zebble ap
 
 
 ### Setup
-* Available on NuGet: [https://www.nuget.org/packages/{Plugin.Name}/](https://www.nuget.org/packages/{Plugin.Name}/)
+* Available on NuGet: [https://www.nuget.org/packages/Zebble.Speech/](https://www.nuget.org/packages/Zebble.Speech/)
 * Install in your platform client projects.
 * Available for iOS, Android and UWP.
 <br>
