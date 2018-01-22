@@ -49,11 +49,32 @@ var settings = new Device.SpeechSettings
 
 await Device.Speech.Speak("Hello world!", settings);
 ```
+##### To use speech recognizer:
+```csharp
+void StartButtonTapped()
+{
+   Device.SpeechRecognizer.Start(Listener);
+}
+
+void Listener(string heardWords)
+{
+   // TODO: Use the words as you please. 
+   // The provided string may contain a single word; or a number of them.
+   // For example, you can use a class-level StringBuilder class, add all heard words to it, and show the concatenated result on the screen.
+}
+
+void StopButtonTapped()
+{
+   Device.SpeechRecognizer.Stop();
+}
+```
 
 <br>
 
 ### Methods
 | Method       | Return Type  | Parameters                          | Android | iOS | Windows |
 | :----------- | :----------- | :-----------                        | :------ | :-- | :------ |
-| Speak        | Task         | text -> string<br> setting -> SpeechSettings| x       | x   | x       |
-| Stop         | void         | -                                   | x     | x   | x
+| Speech.Speak        | Task         | text -> string<br> setting -> SpeechSettings| x       | x   | x       |
+| Speech.Stop         | void         | -                                   | x     | x   | x
+| SpeechRecognizer.Start | Task<bool&gt; | listener -> Action<string&gt; errorAction -> OnError | x | x | x
+| SpeechRecognizer.Stop | Task | - | x | x | x
