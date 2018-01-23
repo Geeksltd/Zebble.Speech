@@ -25,25 +25,32 @@ A Zebble plugin To get the device operating system to read a piece of text out l
 ### Api Usage
 Call Zebble.Device.Speech from any project to gain access to APIs.
 
-##### To read the text:
+##### Read a text:
 ```csharp
 await Device.Speech.Speak("Hello world!");
 ```
-##### To stop reading:
+##### Stop reading:
 ```csharp
 Device.Speech.Stop();
 ```
 ##### Get available languages:
 ```csharp
-var languages = Device.SpeechLanguage.GetInstalledLanguages();
+var languages = Device.Speech.Language.GetInstalledLanguages();
 ```
-##### Set some setting:
+##### Text to Speech Settings:
 ```csharp
-var settings = new Device.SpeechSettings
+var settings = new Device.Speech.Settings
 {
+    // The relative highness or lowness of a tone as perceived by the ear
+    // Default pitch is 1
     Pitch = 1.2, 
+    // Default speed is 1
+    // It could be a value between 0 to 10
     Speed = 1.5,
+    // Default volume is 1
+    // It could be a value between 0 to 1
     Volume = 0.8,
+    // If not specified, the device's default language will be used
     Language = new Device.SpeechLanguage("fr")
 };
 
@@ -53,19 +60,20 @@ await Device.Speech.Speak("Hello world!", settings);
 ```csharp
 void StartButtonTapped()
 {
-   Device.SpeechRecognizer.Start(Listener);
+   Device.Speech.Recognizer.Start(Listener);
 }
 
 void Listener(string heardWords)
 {
    // TODO: Use the words as you please. 
    // The provided string may contain a single word; or a number of them.
-   // For example, you can use a class-level StringBuilder class, add all heard words to it, and show the concatenated result on the screen.
+   // For example, you can use a class-level StringBuilder class, 
+   // add all heard words to it, and show the concatenated result on the screen.
 }
 
 void StopButtonTapped()
 {
-   Device.SpeechRecognizer.Stop();
+   Device.Speech.Recognizer.Stop();
 }
 ```
 

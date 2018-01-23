@@ -17,8 +17,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Speech.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SpeechLanguage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SpeechRecognizer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SpeechSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Language.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Recognizer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
   </ItemGroup>
 </Project>

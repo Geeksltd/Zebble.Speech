@@ -10,7 +10,7 @@
     {
         static SpeechSynthesizer Synthesizer = new SpeechSynthesizer();
 
-        static async Task DoSpeak(string text, SpeechSettings settings)
+        static async Task DoSpeak(string text, Settings settings)
         {
             Synthesizer.Voice = settings.SelectVoice();
 

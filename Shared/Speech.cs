@@ -10,10 +10,11 @@
         /// <summary>
         /// Speaks a specified text using the device's operating system.
         /// </summary>
-        public static async Task Speak(string text, SpeechSettings settings = null, OnError errorAction = OnError.Toast)
+
+        public static async Task Speak(string text, Settings settings = null, OnError errorAction = OnError.Toast)
         {
             if (text.LacksValue()) return;
-            settings = settings ?? new SpeechSettings();
+            settings = settings ?? new Settings();
 
             settings.Volume = settings.Volume.LimitWithin(0, 1);
 

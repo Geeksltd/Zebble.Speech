@@ -17,7 +17,7 @@
             TextToSpeech = new TextToSpeech(Application.Context, Listener);
         }
 
-        static async Task DoSpeak(string text, SpeechSettings settings)
+        static async Task DoSpeak(string text, Settings settings)
         {
             if (text.Length > TextToSpeech.MaxSpeechInputLength)
             {

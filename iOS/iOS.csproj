@@ -52,9 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Speech.cs" />
-    <Compile Include="SpeechLanguage.cs" />
-    <Compile Include="SpeechRecognizer.cs" />
-    <Compile Include="SpeechSettings.cs" />
+    <Compile Include="Language.cs" />
+    <Compile Include="Recognizer.cs" />
+    <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Zebble-LicenseAgreement.txt" />

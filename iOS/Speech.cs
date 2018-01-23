@@ -9,7 +9,7 @@
         static readonly AVSpeechSynthesizer SpeechSynthesizer = new AVSpeechSynthesizer();
         static TaskCompletionSource<object> SpeechInProgress;
 
-        static async Task DoSpeak(string text, SpeechSettings settings)
+        static async Task DoSpeak(string text, Settings settings)
         {
             var utterance = new AVSpeechUtterance(text)
             {
