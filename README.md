@@ -82,7 +82,7 @@ void StopButtonTapped()
 ### Methods
 | Method       | Return Type  | Parameters                          | Android | iOS | Windows |
 | :----------- | :----------- | :-----------                        | :------ | :-- | :------ |
-| Speech.Speak        | Task         | text -> string<br> setting -> SpeechSettings| x       | x   | x       |
+| Speech.Speak        | Task         | text -> string<br> setting -> Speech.Settings| x       | x   | x       |
 | Speech.Stop         | void         | -                                   | x     | x   | x
-| SpeechRecognizer.Start | Task<bool&gt; | listener -> Action<string&gt; errorAction -> OnError | x | x | x
-| SpeechRecognizer.Stop | Task | - | x | x | x
+| Speech.Recognizer.Start | Task<bool&gt; | listener -> Action<string&gt; errorAction -> OnError | x | x | x
+| Speech.Recognizer.Stop | Task | - | x | x | x
