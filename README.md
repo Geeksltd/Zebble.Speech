@@ -51,7 +51,7 @@ var settings = new Device.Speech.Settings
     // It could be a value between 0 to 1
     Volume = 0.8,
     // If not specified, the device's default language will be used
-    Language = new Device.SpeechLanguage("fr")
+    Language = new Device.Speech.Language("fr")
 };
 
 await Device.Speech.Speak("Hello world!", settings);
