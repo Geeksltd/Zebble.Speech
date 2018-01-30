@@ -21,6 +21,18 @@ A Zebble plugin To get the device operating system to read a piece of text out l
 * Available for iOS, Android and UWP.
 <br>
 
+### Platform Specific Notes
+
+#### iOS
+In order to be able to use the speech recognition, you need to add the following tags to the `info.plist` file.
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>{A proper description.}</string>
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>{A proper description.}</string>
+```
+
 
 ### Api Usage
 Call Zebble.Device.Speech from any project to gain access to APIs.
