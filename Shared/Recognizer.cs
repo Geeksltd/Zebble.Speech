@@ -15,7 +15,7 @@
 
                 try
                 {
-                    if (!await Device.Permission.Speech.IsRequestGranted())
+                    if (!await Permission.Speech.IsRequestGranted())
                         throw new Exception("Request was denied to access Speech Recognition.");
 
                     await Thread.UI.Run(DoStart);
