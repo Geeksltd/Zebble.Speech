@@ -12,20 +12,19 @@
     {
         partial class Recognizer
         {
-            static SpeechRecognizer recognizer;
+            static SpeechRecognizer AndroidRecognizer;
             static RecognitionListener StandardListener;
             static Intent VoiceIntent;
             static bool IsStopped;
-            static bool IsEnded;
 
             static Task DoStart()
             {
-                if (recognizer == null)
+                if (AndroidRecognizer == null)
                 {
                     StandardListener = new RecognitionListener();
-                    recognizer = SpeechRecognizer.CreateSpeechRecognizer(UIRuntime.NativeRootScreen as AndroidOS.BaseActivity);
-                    recognizer.SetRecognitionListener(StandardListener);
-                    recognizer.StartListening(CreateIntent());
+                    AndroidRecognizer = SpeechRecognizer.CreateSpeechRecognizer(UIRuntime.NativeRootScreen as AndroidOS.BaseActivity);
+                    AndroidRecognizer.SetRecognitionListener(StandardListener);
+                    AndroidRecognizer.StartListening(CreateIntent());
 
                     IsStopped = false;
                 }
@@ -44,37 +43,34 @@
                 return VoiceIntent;
             }
 
-            public static Task Stop()
+            public static async Task Stop()
             {
-                return Thread.UI.Run(async () =>
+                VoiceIntent?.Dispose();
+                VoiceIntent = null;
+
+                AndroidRecognizer?.SetRecognitionListener(null);
+
+                try
                 {
-                    VoiceIntent?.Dispose();
-                    VoiceIntent = null;
+                    AndroidRecognizer?.Destroy();
+                    AndroidRecognizer?.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    await Alert.Toast("Speech recognition error: " + ex.Message);
+                }
 
-                    recognizer?.SetRecognitionListener(null);
-                    recognizer?.StopListening();
+                AndroidRecognizer = null;
+                StandardListener?.Dispose();
+                StandardListener = null;
 
-                    try
-                    {
-                        recognizer?.Destroy();
-                        recognizer?.Dispose();
-                    }
-                    catch (Exception ex)
-                    {
-                        await Alert.Toast("Speech recognition error: " + ex.Message);
-                    }
-
-                    recognizer = null;
-                    StandardListener?.Dispose();
-                    StandardListener = null;
-
-                    IsStopped = true;
-                });
+                IsStopped = true;
             }
 
             class RecognitionListener : Java.Lang.Object, IRecognitionListener
             {
-                readonly object syncLock = new object();
+                readonly object SyncLock = new object();
+                bool IsEnded;
 
                 public void OnResults(Bundle results)
                 {
@@ -94,14 +90,15 @@
 
                 void RestartRecognizer()
                 {
-                    lock (syncLock)
+                    lock (SyncLock)
                     {
-                        recognizer.Destroy();
-                        recognizer.Dispose();
+                        AndroidRecognizer?.SetRecognitionListener(null);
+                        AndroidRecognizer?.Destroy();
+                        AndroidRecognizer?.Dispose();
 
-                        recognizer = SpeechRecognizer.CreateSpeechRecognizer(Application.Context);
-                        recognizer.SetRecognitionListener(this);
-                        recognizer.StartListening(CreateIntent());
+                        AndroidRecognizer = SpeechRecognizer.CreateSpeechRecognizer(Application.Context);
+                        AndroidRecognizer.SetRecognitionListener(this);
+                        AndroidRecognizer.StartListening(CreateIntent());
                     }
                 }
 
@@ -128,6 +125,9 @@
                 protected override void Dispose(bool disposing)
                 {
                     Listeners = null;
+                    IsStopped = true;
+                    IsEnded = false;
+
                     base.Dispose(disposing);
                 }
             }
