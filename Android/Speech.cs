@@ -12,6 +12,8 @@
         static TextToSpeech TextToSpeech;
         static TaskCompletionSource<bool> InitializationAwaiter = new TaskCompletionSource<bool>();
 
+        const int MAX_INPUT_LEN = 4000;
+
         static Speech()
         {
             TextToSpeech = new TextToSpeech(Application.Context, Listener);
@@ -19,9 +21,9 @@
 
         static async Task DoSpeak(string text, Settings settings)
         {
-            if (text.Length > TextToSpeech.MaxSpeechInputLength)
+            if (text.Length > MAX_INPUT_LEN)
             {
-                Device.Log.Error("Text-to-Speech text length exceeds the maximum supported by this device.");
+                Log.Error("Text-to-Speech text length exceeds the maximum supported by this device.");
                 text = text.Summarize(TextToSpeech.MaxSpeechInputLength);
             }
 
@@ -34,7 +36,7 @@
             var result = TextToSpeech.Speak(text, QueueMode.Flush, null);
 
             if (result == OperationResult.Error)
-                Device.Log.Error(new ArgumentException("Error in text-to-speech engine when listening to progress."));
+                Log.Error(new ArgumentException("Error in text-to-speech engine when listening to progress."));
         }
 
         public static void Stop() => TextToSpeech.Stop();
