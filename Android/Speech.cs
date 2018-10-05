@@ -33,7 +33,12 @@
 
             TextToSpeech.SetPitch(settings.Pitch);
             TextToSpeech.SetSpeechRate(settings.Speed);
-            var result = TextToSpeech.Speak(text, QueueMode.Flush, null);
+
+            OperationResult result;
+            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Lollipop)
+                result = TextToSpeech.Speak(text, QueueMode.Flush, null, null);
+            else
+                result = TextToSpeech.Speak(text, QueueMode.Flush, null);
 
             if (result == OperationResult.Error)
                 Log.Error(new ArgumentException("Error in text-to-speech engine when listening to progress."));
