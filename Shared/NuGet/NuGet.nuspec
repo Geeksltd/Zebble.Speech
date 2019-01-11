@@ -2,11 +2,11 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Zebble.Speech</id>
-    <version>1.1.103</version>
+    <version>1.1.104</version>
     <title>Speech for Zebble (Xamarin)</title>
     <projectUrl>https://github.com/Geeksltd/Zebble.Speech</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/Geeksltd/Zebble.Speech/master/Shared/NuGet/Icon.png</iconUrl>
-    <copyright>Copyright © 2018 Geeks Ltd - All rights reserved.</copyright>
+    <copyright>Copyright © 2019 Geeks Ltd - All rights reserved.</copyright>
     <description>A Zebble plugin To get the device operating system to read a piece of text out loud or recongnize the spoken words.</description>
     <authors>Geeks Ltd</authors>
     <owners>Geeks Ltd</owners>
