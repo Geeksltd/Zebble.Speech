@@ -71,7 +71,7 @@
 
                     var currentText = result.BestTranscription.FormattedString;
 
-                    if (result.Final)
+                    if (currentText.HasValue() || result.Final)
                     {
                         Listeners?.Invoke(currentText);
                     }
