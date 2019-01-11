@@ -43,11 +43,10 @@
 
             static void StartRecording()
             {
-                NSError error;
                 var audioSession = AVAudioSession.SharedInstance();
 
-                audioSession.SetCategory(AVAudioSessionCategory.Record);
-                audioSession.SetMode(AVAudioSession.ModeMeasurement, out error);
+                audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
+                audioSession.SetMode(AVAudioSession.ModeMeasurement, out NSError error);
                 audioSession.SetActive(true);
 
                 if (error != null)
