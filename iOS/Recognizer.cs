@@ -11,6 +11,7 @@
         partial class Recognizer
         {
             static AVAudioEngine AudioEngine;
+            static AVAudioSession AudioSession;
             static SFSpeechRecognizer SpeechRecognizer;
             static SFSpeechAudioBufferRecognitionRequest LiveSpeechRequest;
             static SFSpeechRecognitionTask RecognitionTask;
@@ -43,13 +44,20 @@
 
             static void StartRecording()
             {
-                var audioSession = AVAudioSession.SharedInstance();
+                AudioSession = AVAudioSession.SharedInstance();
 
-                audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
-                audioSession.SetMode(AVAudioSession.ModeMeasurement, out NSError error);
-                audioSession.SetActive(true);
+                AudioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
+                AudioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
+                AudioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
+                AudioSession.SetActive(true);
 
                 if (error != null)
+                {
+                    Log.Error(error);
+                    return;
+                }
+
+                if (speakerError != null)
                 {
                     Log.Error(error);
                     return;
@@ -79,22 +87,7 @@
                     Timer = new System.Timers.Timer(20000) { Enabled = true };
                     Timer.Elapsed += (s, ev) =>
                     {
-
-                        AudioEngine?.InputNode?.RemoveTapOnBus(0);
-                        AudioEngine?.Stop();
-                        AudioEngine?.Dispose();
-                        AudioEngine = null;
-
-                        LiveSpeechRequest?.EndAudio();
-                        LiveSpeechRequest?.Dispose();
-                        LiveSpeechRequest = null;
-
-                        SpeechRecognizer?.Dispose();
-                        SpeechRecognizer = null;
-
-                        Timer.Stop();
-                        Timer = null;
-
+                        StopInstances();
                         StartRecording();
                     };
 
@@ -121,6 +114,15 @@
             {
                 Listeners = null;
 
+                StopInstances();
+
+                return Task.CompletedTask;
+            }
+
+            static void StopInstances()
+            {
+                AudioSession.SetActive(false);
+
                 AudioEngine?.InputNode?.RemoveTapOnBus(0);
                 AudioEngine?.Stop();
                 AudioEngine?.Dispose();
@@ -135,8 +137,6 @@
 
                 Timer?.Dispose();
                 Timer = null;
-
-                return Task.CompletedTask;
             }
         }
     }
