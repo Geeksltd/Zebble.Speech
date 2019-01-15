@@ -11,7 +11,6 @@
         partial class Recognizer
         {
             static AVAudioEngine AudioEngine;
-            static AVAudioSession AudioSession;
             static SFSpeechRecognizer SpeechRecognizer;
             static SFSpeechAudioBufferRecognitionRequest LiveSpeechRequest;
             static SFSpeechRecognitionTask RecognitionTask;
@@ -44,12 +43,12 @@
 
             static void StartRecording()
             {
-                AudioSession = AVAudioSession.SharedInstance();
+                var audioSession = AVAudioSession.SharedInstance();
 
-                AudioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
-                AudioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
-                AudioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
-                AudioSession.SetActive(true);
+                audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
+                audioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
+                audioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
+                audioSession.SetActive(true);
 
                 if (error != null)
                 {
@@ -121,8 +120,6 @@
 
             static void StopInstances()
             {
-                AudioSession.SetActive(false);
-
                 AudioEngine?.InputNode?.RemoveTapOnBus(0);
                 AudioEngine?.Stop();
                 AudioEngine?.Dispose();
