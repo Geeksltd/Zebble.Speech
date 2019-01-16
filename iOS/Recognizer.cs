@@ -16,17 +16,12 @@
             static SFSpeechRecognitionTask RecognitionTask;
 
             static System.Timers.Timer Timer;
+            readonly static object Lock = new object();
 
             static Task DoStart()
             {
                 if (Device.OS.IsBeforeiOS(10))
                     throw new Exception("This feature is not supported in this device. Please upgrade your iOS.");
-
-                if (SpeechRecognizer == null)
-                {
-                    SpeechRecognizer = new SFSpeechRecognizer();
-                    LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest();
-                }
 
                 SFSpeechRecognizer.RequestAuthorization(status =>
                 {
@@ -43,69 +38,71 @@
 
             static void StartRecording()
             {
-                var audioSession = AVAudioSession.SharedInstance();
-
-                audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
-                audioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
-                audioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
-                audioSession.SetActive(true);
-
-                if (error != null)
+                lock (Lock)
                 {
-                    Log.Error(error);
-                    return;
-                }
+                    if (SpeechRecognizer == null)
+                    {
+                        SpeechRecognizer = new SFSpeechRecognizer();
+                        LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest();
+                    }
 
-                if (speakerError != null)
-                {
-                    Log.Error(error);
-                    return;
-                }
+                    var audioSession = AVAudioSession.SharedInstance();
 
-                AudioEngine = new AVAudioEngine();
-                var node = AudioEngine.InputNode;
+                    audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
+                    audioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
+                    audioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
+                    audioSession.SetActive(true);
 
-                LiveSpeechRequest.ShouldReportPartialResults = true;
+                    if (LogErrorAndStop(error) || LogErrorAndStop(speakerError))
+                        return;
 
-                RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (SFSpeechRecognitionResult result, NSError err) =>
-                {
-                    if (err != null)
+                    AudioEngine = new AVAudioEngine();
+                    var node = AudioEngine.InputNode;
+
+                    LiveSpeechRequest.ShouldReportPartialResults = true;
+
+                    RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (SFSpeechRecognitionResult result, NSError err) =>
+                    {
+                        if (LogErrorAndStop(err))
+                            return;
+
+                        var currentText = result.BestTranscription.FormattedString;
+
+                        if (currentText.HasValue())
+                        {
+                            Listeners?.Invoke(currentText, result.Final);
+                        }
+
+                        if (IsContinuous)
+                        {
+                            Timer = new System.Timers.Timer(20000) { Enabled = true };
+                            Timer.Elapsed += (s, ev) =>
+                            {
+                                StopInstances();
+                                StartRecording();
+                            };
+
+                            Timer.Start();
+                        }
+                    });
+
+                    var recordingFormat = node.GetBusOutputFormat(0);
+                    node.InstallTapOnBus(0, 1024, recordingFormat, (AVAudioPcmBuffer buffer, AVAudioTime when) =>
+                    {
+                        LiveSpeechRequest.Append(buffer);
+                    });
+
+                    if (AudioEngine == null)
                     {
                         Stop();
-                        Log.Error(err);
                         return;
                     }
 
-                    var currentText = result.BestTranscription.FormattedString;
+                    AudioEngine?.Prepare();
+                    AudioEngine?.StartAndReturnError(out error);
 
-                    if (currentText.HasValue() || result.Final)
-                    {
-                        Listeners?.Invoke(currentText);
-                    }
-
-                    Timer = new System.Timers.Timer(20000) { Enabled = true };
-                    Timer.Elapsed += (s, ev) =>
-                    {
-                        StopInstances();
-                        StartRecording();
-                    };
-
-                    Timer.Start();
-                });
-
-                var recordingFormat = node.GetBusOutputFormat(0);
-                node.InstallTapOnBus(0, 1024, recordingFormat, (AVAudioPcmBuffer buffer, AVAudioTime when) =>
-                {
-                    LiveSpeechRequest.Append(buffer);
-                });
-
-                AudioEngine.Prepare();
-                AudioEngine.StartAndReturnError(out error);
-
-                if (error != null)
-                {
-                    Log.Error(error);
-                    return;
+                    if (LogErrorAndStop(error))
+                        return;
                 }
             }
 
@@ -114,6 +111,8 @@
                 Listeners = null;
 
                 StopInstances();
+
+                Stopped?.Invoke();
 
                 return Task.CompletedTask;
             }
@@ -132,8 +131,19 @@
                 SpeechRecognizer?.Dispose();
                 SpeechRecognizer = null;
 
-                Timer?.Dispose();
-                Timer = null;
+                //Timer?.Dispose();
+                //Timer = null;
+            }
+
+            static bool LogErrorAndStop(NSError error)
+            {
+                if (error != null)
+                {
+                    Stop();
+                    Log.Error(error);
+                    return true;
+                }
+                return false;
             }
         }
     }

@@ -65,6 +65,8 @@
                 StandardListener = null;
 
                 IsStopped = true;
+
+                Stopped?.Invoke();
             }
 
             class RecognitionListener : Java.Lang.Object, IRecognitionListener
@@ -78,10 +80,10 @@
                     if (result.Count > 0)
                     {
                         var text = result[0].Trim();
-                        Listeners?.Invoke(text);
+                        Listeners?.Invoke(text, IsEnded);
                     }
 
-                    if (IsEnded && !IsStopped)
+                    if (IsEnded && !IsStopped && IsContinuous)
                     {
                         RestartRecognizer();
                         IsEnded = false;

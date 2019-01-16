@@ -41,7 +41,8 @@
                 if (confidence != SpeechRecognitionConfidence.Medium && confidence != SpeechRecognitionConfidence.High) return;
 
                 var text = args.Result.Text;
-                Thread.Pool.RunAction(() => Listeners?.Invoke(text));
+                var isFinal = args.Result.Status == SpeechRecognitionResultStatus.Success;
+                Thread.Pool.RunAction(() => Listeners?.Invoke(text, isFinal));
             }
 
             public static async Task Stop()
@@ -63,6 +64,7 @@
                     {
                         recognizer?.Dispose();
                         Recognizer.recognizer = null;
+                        Stopped?.Invoke();
                     }
                 });
             }

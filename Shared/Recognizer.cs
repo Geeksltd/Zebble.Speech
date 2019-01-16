@@ -7,9 +7,11 @@
     {
         public static partial class Recognizer
         {
-            public static Action<string> Listeners;
+            public static Action<string, bool> Listeners;
+            public static Action Stopped;
+            public static bool IsContinuous = false;
 
-            public static async Task<bool> Start(Action<string> listener, OnError errorAction = OnError.Alert)
+            public static async Task<bool> Start(Action<string, bool> listener, OnError errorAction = OnError.Alert)
             {
                 try { await Stop(); } catch { /* No logging is needed. */ }
 
