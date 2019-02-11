@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "Zebble": "4.4.107"
+    "Zebble": "4.4.148"
   },
   "frameworks": {
     "uap10.0.10240": {}

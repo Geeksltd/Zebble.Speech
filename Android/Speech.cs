@@ -30,7 +30,6 @@
             if (!Listener.IsInitialized) await InitializationAwaiter.Task;
 
             TextToSpeech.SetLanguage(settings.GetLocale());
-
             TextToSpeech.SetPitch(settings.Pitch);
             TextToSpeech.SetSpeechRate(settings.Speed);
 
@@ -42,9 +41,13 @@
 
             if (result == OperationResult.Error)
                 Log.Error(new ArgumentException("Error in text-to-speech engine when listening to progress."));
+
+            SpeechInProgress.TrySetResult(true);
+            // TODO: Change this to be called when it's actually finished.
+            // See https://developer.android.com/reference/android/speech/tts/UtteranceProgressListener
         }
 
-        public static void Stop() => TextToSpeech.Stop();
+        static void DoStop() => TextToSpeech.Stop();
 
         class SpeechListener : Java.Lang.Object, TextToSpeech.IOnInitListener
         {

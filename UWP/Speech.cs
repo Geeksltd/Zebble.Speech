@@ -9,6 +9,8 @@
     public partial class Speech
     {
         static SpeechSynthesizer Synthesizer = new SpeechSynthesizer();
+        static MediaPlayer Player = new MediaPlayer();
+
 
         static async Task DoSpeak(string text, Settings settings)
         {
@@ -16,19 +18,16 @@
 
             Synthesizer.Options.SpeakingRate = GetNormalizedSpeed(settings.Speed);
 
-            var tcs = new TaskCompletionSource<object>();
-            var handler = new TypedEventHandler<MediaPlayer, object>((sender, args) => tcs.TrySetResult(null));
+            var handler = new TypedEventHandler<MediaPlayer, object>((sender, args) => SpeechInProgress?.TrySetResult(true));
+            Player.MediaEnded += handler;
 
-            var player = BackgroundMediaPlayer.Current;
-            player.MediaEnded += handler;
+            var stream = (await Synthesizer.SynthesizeTextToStreamAsync(text));
+            Player.SetStreamSource(stream);
 
-            var stream = await Synthesizer.SynthesizeTextToStreamAsync(text);
-            player.SetStreamSource(stream);
+            Player.Play();
 
-            player.Play();
-
-            await tcs.Task;
-            player.MediaEnded -= handler;
+            await SpeechInProgress.Task;
+            Player.MediaEnded -= handler;
         }
 
         /// <summary>
@@ -36,16 +35,15 @@
         /// </summary>
         static float GetNormalizedSpeed(float speed)
         {
-            if (speed == 1)
-                return 1;
-
-            else if (speed < 1)
-                return 0.5F + speed / 2;
-
-            else
-                return speed * 0.6F;
+            if (speed == 1) return 1;
+            else if (speed < 1) return 0.5F + speed / 2;
+            else return speed * 0.6F;
         }
 
-        public static void Stop() => BackgroundMediaPlayer.Current.Pause();
+        static void DoStop()
+        {
+            if (Player.PlaybackSession?.CanPause == true)
+                Player.Pause();
+        }
     }
 }

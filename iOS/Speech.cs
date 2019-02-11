@@ -7,7 +7,6 @@
     public partial class Speech
     {
         static readonly AVSpeechSynthesizer SpeechSynthesizer = new AVSpeechSynthesizer();
-        static TaskCompletionSource<object> SpeechInProgress;
 
         static async Task DoSpeak(string text, Settings settings)
         {
@@ -19,7 +18,6 @@
                 PitchMultiplier = settings.Pitch
             };
 
-            SpeechInProgress = new TaskCompletionSource<object>();
             SpeechSynthesizer.DidFinishSpeechUtterance += OnFinishedSpeechUtterance;
 
             try
@@ -53,10 +51,9 @@
             SpeechInProgress?.TrySetResult(null);
         }
 
-        public static void Stop()
+        static void DoStop()
         {
             SpeechSynthesizer.StopSpeaking(AVSpeechBoundary.Word);
-            SpeechInProgress?.TrySetCanceled();
         }
     }
 }
