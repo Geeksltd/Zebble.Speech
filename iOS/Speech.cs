@@ -48,7 +48,7 @@
 
         static void OnFinishedSpeechUtterance(object sender, AVSpeechSynthesizerUteranceEventArgs args)
         {
-            SpeechInProgress?.TrySetResult(null);
+            SpeechInProgress?.TrySetResult(false);
         }
 
         static void DoStop()
