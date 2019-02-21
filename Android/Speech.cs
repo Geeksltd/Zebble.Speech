@@ -4,11 +4,13 @@
     using Android.Runtime;
     using Android.Speech.Tts;
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     public partial class Speech
     {
         static SpeechListener Listener = new SpeechListener();
+        static SpeechProgressListener ProgressListener = new SpeechProgressListener();
         static TextToSpeech TextToSpeech;
         static TaskCompletionSource<bool> InitializationAwaiter = new TaskCompletionSource<bool>();
 
@@ -17,6 +19,7 @@
         static Speech()
         {
             TextToSpeech = new TextToSpeech(Application.Context, Listener);
+            TextToSpeech.SetOnUtteranceProgressListener(ProgressListener);
         }
 
         static async Task DoSpeak(string text, Settings settings)
@@ -34,17 +37,16 @@
             TextToSpeech.SetSpeechRate(settings.Speed);
 
             OperationResult result;
+            var map = new Dictionary<string, string>();
+            map.Add(TextToSpeech.Engine.KeyParamUtteranceId, Guid.NewGuid().ToString());
+
             if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Lollipop)
-                result = TextToSpeech.Speak(text, QueueMode.Flush, null, null);
+                result = TextToSpeech.Speak(text, QueueMode.Flush, null, map[TextToSpeech.Engine.KeyParamUtteranceId]);
             else
-                result = TextToSpeech.Speak(text, QueueMode.Flush, null);
+                result = TextToSpeech.Speak(text, QueueMode.Flush, map);
 
             if (result == OperationResult.Error)
                 Log.Error(new ArgumentException("Error in text-to-speech engine when listening to progress."));
-
-            SpeechInProgress.TrySetResult(true);
-            // TODO: Change this to be called when it's actually finished.
-            // See https://developer.android.com/reference/android/speech/tts/UtteranceProgressListener
         }
 
         static void DoStop() => TextToSpeech.Stop();
@@ -64,6 +66,21 @@
                 {
                     InitializationAwaiter.TrySetException(new ArgumentException("Failed to initialize the text to speech engine."));
                 }
+            }
+        }
+
+        class SpeechProgressListener : UtteranceProgressListener
+        {
+            public override void OnStart(string utteranceId)
+            {
+            }
+
+            public override void OnDone(string utteranceId) => SpeechInProgress.TrySetResult(true);
+
+            public override void OnError(string utteranceId)
+            {
+                SpeechInProgress.TrySetResult(false);
+                Log.Error($"Error in text-to-speech engine when listening to progress. [{utteranceId}]");
             }
         }
     }
