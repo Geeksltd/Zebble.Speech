@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Zebble.Speech</id>
-    <version>1.1.109</version>
+    <version>1.1.112</version>
     <title>Speech for Zebble (Xamarin)</title>
     <projectUrl>https://github.com/Geeksltd/Zebble.Speech</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/Geeksltd/Zebble.Speech/master/Shared/NuGet/Icon.png</iconUrl>
@@ -18,8 +18,6 @@
     <file src="..\..\lib\bin\ARM\Release\Zebble.Speech.UWP.*" target="runtimes\win10-arm\lib\uap10.0" />
     <file src="..\..\lib\bin\x64\Release\Zebble.Speech.UWP.*" target="runtimes\win10-x64\lib\uap10.0" />
     <file src="..\..\lib\bin\x86\Release\Zebble.Speech.UWP.*" target="runtimes\win10-x86\lib\uap10.0" />
-
     <file src="..\..\lib\bin\Release\Zebble.Speech.UWP.*" target="ref\uap10.0" />
-
   </files>
 </package>
