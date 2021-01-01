@@ -5,6 +5,7 @@
     using global::Speech;
     using System;
     using System.Threading.Tasks;
+    using Olive;
 
     public partial class Speech
     {
@@ -16,7 +17,7 @@
             static SFSpeechRecognitionTask RecognitionTask;
 
             static System.Timers.Timer Timer;
-            readonly static object Lock = new object();
+            static readonly object Lock = new object();
 
             static Task DoStart()
             {

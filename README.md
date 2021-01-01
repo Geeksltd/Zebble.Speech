@@ -1,4 +1,4 @@
-﻿[logo]: https://raw.githubusercontent.com/Geeksltd/Zebble.Speech/master/Shared/NuGet/Icon.png "Zebble.Speech"
+﻿[logo]: https://raw.githubusercontent.com/Geeksltd/Zebble.Speech/master/icon.png "Zebble.Speech"
 
 
 ## Zebble.Speech
