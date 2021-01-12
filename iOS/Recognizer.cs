@@ -141,7 +141,7 @@
                 if (error != null)
                 {
                     Stop();
-                    Log.Error(error);
+                    Log.For(typeof(Recognizer)).Error(null, error.ToString());
                     return true;
                 }
                 return false;
