@@ -15,7 +15,7 @@
                 var voice = AVSpeechSynthesisVoice.FromLanguage(language);
                 if (voice != null) return voice;
 
-                Log.For(this).Error(null, "Voice not found for language: " + language + ". Using default instead.");
+                Log.For(this).Error("Voice not found for language: " + language + ". Using default instead.");
                 return AVSpeechSynthesisVoice.FromLanguage(AVSpeechSynthesisVoice.CurrentLanguageCode);
             }
         }
