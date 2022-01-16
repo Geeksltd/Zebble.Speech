@@ -10,7 +10,8 @@
             internal Locale GetLocale()
             {
                 if (Language == null) return Locale.Default;
-                return Locale.GetAvailableLocales().FirstOrDefault(x => x.Language == Language?.Id) ?? Locale.Default;
+                var langs = Locale.GetAvailableLocales().ToList();
+                return langs.FirstOrDefault(x => x.Language.Replace("_","-").StartsWith(Language?.Id.ToLower())) ?? Locale.Default;
             }
         }
     }

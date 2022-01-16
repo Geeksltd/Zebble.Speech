@@ -19,7 +19,7 @@
 
             internal VoiceInformation SelectVoice()
             {
-                return SpeechSynthesizer.AllVoices.FirstOrDefault(x => x.Language == Language?.Id)
+                return SpeechSynthesizer.AllVoices.FirstOrDefault(x => x.Language.ToLower().StartsWith(Language?.Id))
                      ?? SpeechSynthesizer.DefaultVoice;
             }
         }

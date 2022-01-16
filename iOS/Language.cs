@@ -13,7 +13,7 @@
             {
                 return AVSpeechSynthesisVoice.GetSpeechVoices()
                   .OrderBy(a => a.Language)
-                  .Select(a => new Language { Id = a.Language, Name = a.Language });
+                  .Select(a => new Language { Id = a.Language.ToLower(), Name = a.Language });
             }
         }
     }
