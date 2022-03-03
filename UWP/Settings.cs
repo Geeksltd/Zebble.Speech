@@ -1,6 +1,7 @@
 ﻿namespace Zebble.Device
 {
     using System.Linq;
+    using Olive;
     using Windows.Media.SpeechSynthesis;
 
     partial class Speech
@@ -19,7 +20,7 @@
 
             internal VoiceInformation SelectVoice()
             {
-                return SpeechSynthesizer.AllVoices.FirstOrDefault(x => x.Language.ToLower().StartsWith(Language?.Id))
+                return SpeechSynthesizer.AllVoices.FirstOrDefault(x => x.Language.StartsWith(Language?.Id,false))
                      ?? SpeechSynthesizer.DefaultVoice;
             }
         }
