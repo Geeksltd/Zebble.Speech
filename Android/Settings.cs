@@ -11,7 +11,7 @@
             {
                 if (Language == null) return Locale.Default;
                 var langs = Locale.GetAvailableLocales().ToList();
-                var selection= langs.FirstOrDefault(x => x.Language.Replace("_","-").StartsWith(Language?.Id,false)) ?? Locale.Default;
+                var selection= langs.FirstOrDefault(x => x.Language.Replace("_","-").StartsWith(Language?.Id,false)) ?? langs.FirstOrDefault(x => x.Language.Replace("_", "-").StartsWith(Language?.Id.Split("-").FirstOrDefault(), false)) ?? Locale.Default;
                 return selection;
             }
         }
