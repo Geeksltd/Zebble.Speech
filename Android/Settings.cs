@@ -11,9 +11,17 @@
             {
                 if (Language == null) return Locale.Default;
                 var langs = Locale.GetAvailableLocales().ToList();
-                var selection= langs.FirstOrDefault(x => x.Language.Replace("_","-").StartsWith(Language?.Id,false)) ?? langs.FirstOrDefault(x => x.Language.Replace("_", "-").StartsWith(Language?.Id.Split("-").FirstOrDefault(), false)) ?? Locale.Default;
+                var all = langs.OrderByDescending(x=>x.Language.Equals(Language.LanguageCode,false))
+                    .ThenByDescending(x=>x.Country.Equals(Language.CountryCode,false))
+                    .ThenByDescending(x=>x==Locale.Default)
+                    .ToList();
+
+
+                var selection = all.FirstOrDefault();
                 return selection;
             }
+
+            
         }
     }
 }

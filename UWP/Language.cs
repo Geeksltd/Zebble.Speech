@@ -15,9 +15,8 @@
             {
                 return SpeechSynthesizer.AllVoices
                                 .OrderBy(a => a.Language)
-                                .Select(a => new Language
+                                .Select(a => new Language(a.Language)
                                 {
-                                    Id = a.Language,
                                     Name = a.DisplayName,
                                     Gender = a.Gender
                                 })

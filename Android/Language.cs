@@ -12,8 +12,15 @@
             static IEnumerable<Language> FindInstalledLanguages()
             {
                 return Locale.GetAvailableLocales()
-                  .Where(a => a.Language.HasValue() && a.DisplayName.HasValue())
-                  .Select(a => new Language { Id = a.Language, Name = a.DisplayName })
+                  .Where(a => a.Language.HasValue() && a.Country.HasValue() && a.DisplayName.HasValue())
+                  .Select(a => new Language 
+                  { 
+                      Id = a.ToString(), 
+                      LanguageCode= a.Language,
+                      CountryCode=a.Country,
+                      Name = a.DisplayName 
+                  }
+                  )
                   .GroupBy(c => c.Id)
                   .Select(g => g.First());
             }

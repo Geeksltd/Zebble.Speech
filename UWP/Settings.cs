@@ -20,7 +20,10 @@
 
             internal VoiceInformation SelectVoice()
             {
-                return SpeechSynthesizer.AllVoices.FirstOrDefault(x => x.Language.StartsWith(Language?.Id,false))
+                return SpeechSynthesizer.AllVoices.OrderByDescending(x => x.Language.StartsWith(Language?.LanguageCode,false))
+                    .ThenByDescending(x=>x.Language.Contains(Language.CountryCode,false))
+                    .ThenByDescending(x=>x== SpeechSynthesizer.DefaultVoice)
+                    .FirstOrDefault()
                      ?? SpeechSynthesizer.DefaultVoice;
             }
         }
