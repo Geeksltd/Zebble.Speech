@@ -48,8 +48,6 @@
                 VoiceIntent?.Dispose();
                 VoiceIntent = null;
 
-                AndroidRecognizer?.SetRecognitionListener(null);
-
                 try
                 {
                     AndroidRecognizer?.Destroy();
