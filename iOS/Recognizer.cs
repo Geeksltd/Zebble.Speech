@@ -132,8 +132,12 @@
                 SpeechRecognizer?.Dispose();
                 SpeechRecognizer = null;
 
-                //Timer?.Dispose();
-                //Timer = null;
+                RecognitionTask?.Cancel();
+                RecognitionTask?.Dispose();
+                RecognitionTask = null;
+
+                Timer?.Dispose();
+                Timer = null;
             }
 
             static bool LogErrorAndStop(NSError error)
