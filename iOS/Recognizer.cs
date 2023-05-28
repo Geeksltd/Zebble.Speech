@@ -11,13 +11,10 @@
     {
         partial class Recognizer
         {
-            static AVAudioEngine AudioEngine;
             static SFSpeechRecognizer SpeechRecognizer;
+            static AVAudioEngine AudioEngine;
             static SFSpeechAudioBufferRecognitionRequest LiveSpeechRequest;
             static SFSpeechRecognitionTask RecognitionTask;
-
-            static System.Timers.Timer Timer;
-            static readonly object Lock = new object();
 
             static Task DoStart()
             {
@@ -39,72 +36,58 @@
 
             static void StartRecording()
             {
-                lock (Lock)
+                SpeechRecognizer = new SFSpeechRecognizer();
+
+                if (!SpeechRecognizer.Available)
+                    return;
+
+                if (SFSpeechRecognizer.AuthorizationStatus != SFSpeechRecognizerAuthorizationStatus.Authorized)
+                    return;
+
+                var audioSession = AVAudioSession.SharedInstance();
+
+                audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
+                audioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
+                audioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
+                audioSession.SetActive(true);
+
+                if (LogErrorAndStop(error) || LogErrorAndStop(speakerError))
+                    return;
+
+                AudioEngine = new AVAudioEngine();
+                LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest();
+
+                var node = AudioEngine.InputNode;
+                var recordingFormat = node.GetBusOutputFormat(0);
+
+                node.InstallTapOnBus(0, 1024, recordingFormat, (buffer, when) =>
                 {
-                    if (SpeechRecognizer == null)
+                    LiveSpeechRequest.Append(buffer);
+                });
+
+                LiveSpeechRequest.ShouldReportPartialResults = true;
+
+                var currentIndex = 0;
+                RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (result, err) =>
+                {
+                    if (LogErrorAndStop(err))
+                        return;
+
+                    var currentText = result.BestTranscription.FormattedString;
+
+                    for (var i = currentIndex; i < result.BestTranscription.Segments.Length; i++)
                     {
-                        SpeechRecognizer = new SFSpeechRecognizer();
-                        LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest();
+                        var s = result.BestTranscription.Segments[i].Substring;
+                        currentIndex++;
+                        Listeners?.Invoke(s, result.Final);
                     }
+                });
 
-                    var audioSession = AVAudioSession.SharedInstance();
+                AudioEngine.Prepare();
+                AudioEngine.StartAndReturnError(out error);
 
-                    audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
-                    audioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
-                    audioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
-                    audioSession.SetActive(true);
-
-                    if (LogErrorAndStop(error) || LogErrorAndStop(speakerError))
-                        return;
-
-                    AudioEngine = new AVAudioEngine();
-                    var node = AudioEngine.InputNode;
-
-                    LiveSpeechRequest.ShouldReportPartialResults = true;
-
-                    RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (SFSpeechRecognitionResult result, NSError err) =>
-                    {
-                        if (LogErrorAndStop(err))
-                            return;
-
-                        var currentText = result.BestTranscription.FormattedString;
-
-                        if (currentText.HasValue())
-                        {
-                            Listeners?.Invoke(currentText, result.Final);
-                        }
-
-                        if (IsContinuous)
-                        {
-                            Timer = new System.Timers.Timer(20000) { Enabled = true };
-                            Timer.Elapsed += (s, ev) =>
-                            {
-                                StopInstances();
-                                StartRecording();
-                            };
-
-                            Timer.Start();
-                        }
-                    });
-
-                    var recordingFormat = node.GetBusOutputFormat(0);
-                    node.InstallTapOnBus(0, 1024, recordingFormat, (AVAudioPcmBuffer buffer, AVAudioTime when) =>
-                    {
-                        LiveSpeechRequest.Append(buffer);
-                    });
-
-                    if (AudioEngine == null)
-                    {
-                        Stop();
-                        return;
-                    }
-
-                    AudioEngine?.Prepare();
-                    AudioEngine?.StartAndReturnError(out error);
-
-                    if (LogErrorAndStop(error))
-                        return;
-                }
+                if (LogErrorAndStop(error))
+                    return;
             }
 
             public static Task Stop()
@@ -135,9 +118,6 @@
                 RecognitionTask?.Cancel();
                 RecognitionTask?.Dispose();
                 RecognitionTask = null;
-
-                Timer?.Dispose();
-                Timer = null;
             }
 
             static bool LogErrorAndStop(NSError error)
