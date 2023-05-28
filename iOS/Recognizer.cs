@@ -116,6 +116,7 @@
                 SpeechRecognizer = null;
 
                 RecognitionTask?.Cancel();
+                RecognitionTask?.Finish();
                 RecognitionTask?.Dispose();
                 RecognitionTask = null;
             }
