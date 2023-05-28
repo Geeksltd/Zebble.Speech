@@ -36,6 +36,8 @@
 
             static void StartRecording()
             {
+                StopInstances();
+
                 SpeechRecognizer = new SFSpeechRecognizer();
 
                 if (!SpeechRecognizer.Available)
