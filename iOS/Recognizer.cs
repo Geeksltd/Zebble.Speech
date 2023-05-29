@@ -127,7 +127,6 @@
             {
                 if (error != null)
                 {
-                    Stop();
                     Log.For(typeof(Recognizer)).Error(error.ToString());
                     return true;
                 }
