@@ -23,7 +23,11 @@
 
                 SFSpeechRecognizer.RequestAuthorization(status =>
                 {
-                    if (status == SFSpeechRecognizerAuthorizationStatus.Authorized) StartRecording();
+                    if (status == SFSpeechRecognizerAuthorizationStatus.Authorized)
+                    {
+                        StopInstances();
+                        StartRecording();
+                    }
                     else
                     {
                         Stop();
@@ -36,8 +40,6 @@
 
             static void StartRecording()
             {
-                StopInstances();
-
                 SpeechRecognizer = new SFSpeechRecognizer();
 
                 if (!SpeechRecognizer.Available)
@@ -47,6 +49,8 @@
                     return;
 
                 var audioSession = AVAudioSession.SharedInstance();
+                if (audioSession is null)
+                    return;
 
                 audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
                 audioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
@@ -60,6 +64,9 @@
                 LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest();
 
                 var node = AudioEngine.InputNode;
+                if (node is null)
+                    return;
+
                 var recordingFormat = node.GetBusOutputFormat(0);
 
                 node.InstallTapOnBus(0, 1024, recordingFormat, (buffer, when) =>
