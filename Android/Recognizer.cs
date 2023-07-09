@@ -50,6 +50,7 @@
 
                 try
                 {
+                    AndroidRecognizer?.SetRecognitionListener(null);
                     AndroidRecognizer?.Destroy();
                     AndroidRecognizer?.Dispose();
                 }
@@ -92,9 +93,16 @@
                 {
                     lock (SyncLock)
                     {
-                        AndroidRecognizer?.SetRecognitionListener(null);
-                        AndroidRecognizer?.Destroy();
-                        AndroidRecognizer?.Dispose();
+                        try
+                        {
+                            AndroidRecognizer?.SetRecognitionListener(null);
+                            AndroidRecognizer?.Destroy();
+                            AndroidRecognizer?.Dispose();
+                        }
+                        catch (Exception ex)
+                        {
+                            Alert.Toast("Speech recognition error: " + ex.Message).RunInParallel();
+                        }
 
                         AndroidRecognizer = SpeechRecognizer.CreateSpeechRecognizer(Application.Context);
                         AndroidRecognizer.SetRecognitionListener(this);
