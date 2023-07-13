@@ -45,28 +45,25 @@
                 Thread.Pool.RunAction(() => Listeners?.Invoke(text, isFinal));
             }
 
-            public static async Task Stop()
+            static async Task DoStop()
             {
                 var recognizer = Recognizer.recognizer;
                 if (recognizer == null) return;
                 Listeners = null;
 
-                await Thread.UI.Run(async () =>
+                try
                 {
-                    try
-                    {
-                        Listeners = null;
+                    Listeners = null;
 
-                        await recognizer.ContinuousRecognitionSession.StopAsync();
-                        recognizer.ContinuousRecognitionSession.ResultGenerated -= ContinuousRecognitionSession_ResultGenerated;
-                    }
-                    finally
-                    {
-                        recognizer?.Dispose();
-                        Recognizer.recognizer = null;
-                        Stopped?.Invoke();
-                    }
-                });
+                    await recognizer.ContinuousRecognitionSession.StopAsync();
+                    recognizer.ContinuousRecognitionSession.ResultGenerated -= ContinuousRecognitionSession_ResultGenerated;
+                }
+                finally
+                {
+                    recognizer?.Dispose();
+                    Recognizer.recognizer = null;
+                    Stopped?.Invoke();
+                }
             }
         }
     }

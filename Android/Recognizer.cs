@@ -43,7 +43,7 @@
                 return VoiceIntent;
             }
 
-            public static async Task Stop()
+            static async Task DoStop()
             {
                 VoiceIntent?.Dispose();
                 VoiceIntent = null;

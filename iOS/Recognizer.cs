@@ -99,7 +99,7 @@
                     return;
             }
 
-            public static Task Stop()
+            static Task DoStop()
             {
                 Listeners = null;
 

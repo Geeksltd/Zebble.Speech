@@ -30,6 +30,20 @@
                     return false;
                 }
             }
+
+            public static async Task<bool> Stop(OnError errorAction = OnError.Alert)
+            {
+                try
+                {
+                    await Thread.UI.Run(DoStop);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    await errorAction.Apply(ex);
+                    return false;
+                }
+            }
         }
     }
 }
