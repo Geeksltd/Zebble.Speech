@@ -37,24 +37,18 @@
 
             static void ContinuousRecognitionSession_ResultGenerated(SpeechContinuousRecognitionSession sender, SpeechContinuousRecognitionResultGeneratedEventArgs args)
             {
-                var confidence = args.Result.Confidence;
-                if (confidence != SpeechRecognitionConfidence.Medium && confidence != SpeechRecognitionConfidence.High) return;
-
-                var text = args.Result.Text;
-                var isFinal = args.Result.Status == SpeechRecognitionResultStatus.Success;
-                Thread.Pool.RunAction(() => Listeners?.Invoke(text, isFinal));
+                if (args.Result.Confidence == SpeechRecognitionConfidence.Rejected) return;
+                Thread.Pool.RunAction(() => Detected?.Invoke(args.Result.Text));
             }
 
             static async Task DoStop()
             {
                 var recognizer = Recognizer.recognizer;
                 if (recognizer == null) return;
-                Listeners = null;
+                Detected = null;
 
                 try
                 {
-                    Listeners = null;
-
                     await recognizer.ContinuousRecognitionSession.StopAsync();
                     recognizer.ContinuousRecognitionSession.ResultGenerated -= ContinuousRecognitionSession_ResultGenerated;
                 }

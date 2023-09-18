@@ -35,11 +35,10 @@
             static Intent CreateIntent()
             {
                 VoiceIntent = new Intent(RecognizerIntent.ActionRecognizeSpeech);
-                VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguagePreference, Java.Util.Locale.Default);
-                VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguage, Java.Util.Locale.Default);
+                VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguagePreference, Java.Util.Locale.English);
+                VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguage, Java.Util.Locale.English);
                 VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguageModel, RecognizerIntent.LanguageModelFreeForm);
-                VoiceIntent.PutExtra(RecognizerIntent.ExtraCallingPackage, Application.Context.PackageName);
-                VoiceIntent.PutExtra(RecognizerIntent.ExtraPartialResults, true);
+                VoiceIntent.PutExtra(RecognizerIntent.ExtraCallingPackage, Application.Context.PackageName);                
                 return VoiceIntent;
             }
 
@@ -71,7 +70,6 @@
             class RecognitionListener : Java.Lang.Object, IRecognitionListener
             {
                 readonly object SyncLock = new object();
-                bool IsEnded;
 
                 public void OnResults(Bundle results)
                 {
@@ -79,13 +77,7 @@
                     if (result.Count > 0)
                     {
                         var text = result[0].Trim();
-                        Listeners?.Invoke(text, IsEnded);
-                    }
-
-                    if (IsEnded && !IsStopped && IsContinuous)
-                    {
-                        RestartRecognizer();
-                        IsEnded = false;
+                        Detected?.Invoke(text);
                     }
                 }
 
@@ -110,7 +102,7 @@
                     }
                 }
 
-                void IRecognitionListener.OnEndOfSpeech() => IsEnded = true;
+                void IRecognitionListener.OnEndOfSpeech() { }
 
                 void IRecognitionListener.OnError([GeneratedEnum] SpeechRecognizerError error)
                 {
@@ -132,9 +124,8 @@
 
                 protected override void Dispose(bool disposing)
                 {
-                    Listeners = null;
+                    Detected = null;
                     IsStopped = true;
-                    IsEnded = false;
 
                     base.Dispose(disposing);
                 }

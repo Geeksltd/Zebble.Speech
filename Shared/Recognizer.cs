@@ -7,11 +7,10 @@
     {
         public static partial class Recognizer
         {
-            public static Action<string, bool> Listeners;
+            public static Action<string> Detected;
             public static Action Stopped;
-            public static bool IsContinuous = false;
 
-            public static async Task<bool> Start(Action<string, bool> listener, OnError errorAction = OnError.Alert)
+            public static async Task<bool> Start(Action<string> listener, OnError errorAction = OnError.Alert)
             {
                 try { await Stop(); } catch { /* No logging is needed. */ }
 
@@ -21,7 +20,7 @@
                         throw new Exception("Request was denied to access Speech Recognition.");
 
                     await Thread.UI.Run(DoStart);
-                    Listeners += listener;
+                    Detected += listener;
                     return true;
                 }
                 catch (Exception ex)
@@ -38,6 +37,7 @@
                     await Thread.UI.Run(DoStop);
                     return true;
                 }
+                catch (InvalidOperationException) { return false; }
                 catch (Exception ex)
                 {
                     await errorAction.Apply(ex);

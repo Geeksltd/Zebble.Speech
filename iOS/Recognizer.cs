@@ -76,20 +76,12 @@
 
                 LiveSpeechRequest.ShouldReportPartialResults = true;
 
-                var currentIndex = 0;
                 RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (result, err) =>
                 {
                     if (LogErrorAndStop(err)) return;
-                    if (!result.Final) return;
 
                     var currentText = result.BestTranscription.FormattedString;
-
-                    for (var i = currentIndex; i < result.BestTranscription.Segments.Length; i++)
-                    {
-                        var s = result.BestTranscription.Segments[i].Substring;
-                        currentIndex++;
-                        Listeners?.Invoke(s, result.Final);
-                    }
+                    Detected?.Invoke(result.BestTranscription.FormattedString);
                 });
 
                 AudioEngine.Prepare();
@@ -101,10 +93,8 @@
 
             static Task DoStop()
             {
-                Listeners = null;
-
+                Detected = null;
                 StopInstances();
-
                 Stopped?.Invoke();
 
                 return Task.CompletedTask;
