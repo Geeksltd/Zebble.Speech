@@ -79,8 +79,8 @@
                 var currentIndex = 0;
                 RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (result, err) =>
                 {
-                    if (LogErrorAndStop(err))
-                        return;
+                    if (LogErrorAndStop(err)) return;
+                    if (!result.Final) return;
 
                     var currentText = result.BestTranscription.FormattedString;
 
