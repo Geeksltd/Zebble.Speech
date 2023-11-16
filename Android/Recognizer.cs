@@ -55,7 +55,7 @@
                 }
                 catch (Exception ex)
                 {
-                    await Alert.Toast("Speech recognition error: " + ex.Message);
+                    await Dialogs.Current.Toast("Speech recognition error: " + ex.Message);
                 }
 
                 AndroidRecognizer = null;
@@ -93,7 +93,7 @@
                         }
                         catch (Exception ex)
                         {
-                            Alert.Toast("Speech recognition error: " + ex.Message).RunInParallel();
+                            Dialogs.Current.Toast("Speech recognition error: " + ex.Message).RunInParallel();
                         }
 
                         AndroidRecognizer = SpeechRecognizer.CreateSpeechRecognizer(Application.Context);
