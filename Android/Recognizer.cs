@@ -38,7 +38,8 @@
                 VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguagePreference, Java.Util.Locale.English);
                 VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguage, Java.Util.Locale.English);
                 VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguageModel, RecognizerIntent.LanguageModelFreeForm);
-                VoiceIntent.PutExtra(RecognizerIntent.ExtraCallingPackage, Application.Context.PackageName);                
+                VoiceIntent.PutExtra(RecognizerIntent.ExtraCallingPackage, Application.Context.PackageName);
+                VoiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputCompleteSilenceLengthMillis, 15000);
                 return VoiceIntent;
             }
 
@@ -73,12 +74,9 @@
 
                 public void OnResults(Bundle results)
                 {
-                    var result = results.GetStringArrayList(SpeechRecognizer.ResultsRecognition);
-                    if (result.Count > 0)
-                    {
-                        var text = result[0].Trim();
-                        Detected?.Invoke(text);
-                    }
+                    var text = GetPlainText(results);
+                    if (!string.IsNullOrEmpty(text)) Detected?.Invoke(text);
+                    Recognizer.DoStop().RunInParallel();
                 }
 
                 void RestartRecognizer()
@@ -103,7 +101,7 @@
                 }
 
                 void IRecognitionListener.OnEndOfSpeech() { }
-
+                
                 void IRecognitionListener.OnError([GeneratedEnum] SpeechRecognizerError error)
                 {
                     if (IsStopped) return;
@@ -112,7 +110,18 @@
 
                 void IRecognitionListener.OnEvent(int eventType, Bundle @params) { }
 
-                void IRecognitionListener.OnPartialResults(Bundle partialResults) { }
+                void IRecognitionListener.OnPartialResults(Bundle partialResults) 
+                {
+                    var text = GetPlainText(partialResults);
+                    if (!string.IsNullOrEmpty(text)) Detected?.Invoke(text);
+                }
+
+                string GetPlainText(Bundle results)
+                {
+                    var result = results.GetStringArrayList(SpeechRecognizer.ResultsRecognition);
+                    if (result?.Count > 0) return result[0].Trim();
+                    return string.Empty;
+                }
 
                 void IRecognitionListener.OnReadyForSpeech(Bundle @params) { }
 
