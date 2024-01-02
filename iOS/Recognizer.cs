@@ -67,7 +67,8 @@
                 if (node is null)
                     return;
 
-                var recordingFormat = node.GetBusOutputFormat(0);
+                var outputFormat = node.GetBusOutputFormat(0);
+                var recordingFormat = new AVAudioFormat(outputFormat.SampleRate, channels: 1);
 
                 node.InstallTapOnBus(0, 1024, recordingFormat, (buffer, when) =>
                 {
@@ -79,8 +80,6 @@
                 RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (result, err) =>
                 {
                     if (LogErrorAndStop(err)) return;
-
-                    var currentText = result.BestTranscription.FormattedString;
                     Detected?.Invoke(result.BestTranscription.FormattedString);
                 });
 
