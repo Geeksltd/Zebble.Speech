@@ -61,21 +61,20 @@
                     return;
 
                 AudioEngine = new AVAudioEngine();
-                LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest();
+                LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest
+                {
+                    ShouldReportPartialResults = true
+                };
 
                 var node = AudioEngine.InputNode;
-                if (node is null)
-                    return;
+                if (node is null) return;
 
-                var outputFormat = node.GetBusOutputFormat(0);
-                var recordingFormat = new AVAudioFormat(outputFormat.SampleRate, outputFormat.ChannelCount);
+                var recordingFormat = new AVAudioFormat(audioSession.SampleRate, channels: 1);
 
                 node.InstallTapOnBus(0, 1024, recordingFormat, (buffer, when) =>
                 {
                     LiveSpeechRequest.Append(buffer);
                 });
-
-                LiveSpeechRequest.ShouldReportPartialResults = true;
 
                 RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (result, err) =>
                 {
@@ -86,8 +85,7 @@
                 AudioEngine.Prepare();
                 AudioEngine.StartAndReturnError(out error);
 
-                if (LogErrorAndStop(error))
-                    return;
+                if (LogErrorAndStop(error)) return;
             }
 
             static Task DoStop()
