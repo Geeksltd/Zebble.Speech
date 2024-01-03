@@ -68,7 +68,7 @@
                     return;
 
                 var outputFormat = node.GetBusOutputFormat(0);
-                var recordingFormat = new AVAudioFormat(outputFormat.SampleRate, channels: 1);
+                var recordingFormat = new AVAudioFormat(outputFormat.SampleRate, outputFormat.ChannelCount);
 
                 node.InstallTapOnBus(0, 1024, recordingFormat, (buffer, when) =>
                 {
