@@ -51,7 +51,7 @@
                 var audioSession = AVAudioSession.SharedInstance();
                 if (audioSession is null)
                     return;
-
+                
                 audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
                 audioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
                 audioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
@@ -61,20 +61,20 @@
                     return;
 
                 AudioEngine = new AVAudioEngine();
+                var node = AudioEngine.InputNode;
+                if (node is null) return;
+
+                var recordingFormat = node.GetBusOutputFormat(0);
+
+                node.InstallTapOnBus(0, 1024, recordingFormat, (buffer, when) =>
+                {
+                    LiveSpeechRequest?.Append(buffer);
+                });
+
                 LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest
                 {
                     ShouldReportPartialResults = true
                 };
-
-                var node = AudioEngine.InputNode;
-                if (node is null) return;
-
-                var recordingFormat = new AVAudioFormat(audioSession.SampleRate, channels: 1);
-
-                node.InstallTapOnBus(0, 1024, recordingFormat, (buffer, when) =>
-                {
-                    LiveSpeechRequest.Append(buffer);
-                });
 
                 RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (result, err) =>
                 {
