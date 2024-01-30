@@ -27,7 +27,7 @@
         {
             if (text.Length > MAX_INPUT_LEN)
             {
-                Log.For(typeof (Speech)).Error("Text-to-Speech text length exceeds the maximum supported by this device.");
+                Log.For(typeof(Speech)).Error("Text-to-Speech text length exceeds the maximum supported by this device.");
                 text = text.Summarize(TextToSpeech.MaxSpeechInputLength);
             }
 
@@ -47,7 +47,8 @@
                 result = TextToSpeech.Speak(text, QueueMode.Flush, map);
 
             if (result == OperationResult.Error)
-                Log.For(typeof (Speech)).Error(new ArgumentException("Error in text-to-speech engine when listening to progress."));
+                Log.For(typeof(Speech))
+                    .Error(new ArgumentException("Error in text-to-speech engine when listening to progress."));
         }
 
         static void DoStop() => TextToSpeech.Stop();
@@ -81,7 +82,7 @@
             public override void OnError(string utteranceId)
             {
                 SpeechInProgress.TrySetResult(false);
-                Log.For(typeof (Speech)).Error($"Error in text-to-speech engine when listening to progress. [{utteranceId}]");
+                Log.For(typeof(Speech)).Error($"Error in text-to-speech engine when listening to progress. [{utteranceId}]");
             }
         }
     }

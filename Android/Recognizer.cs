@@ -101,7 +101,7 @@
                 }
 
                 void IRecognitionListener.OnEndOfSpeech() { }
-                
+
                 void IRecognitionListener.OnError([GeneratedEnum] SpeechRecognizerError error)
                 {
                     if (IsStopped) return;
@@ -110,7 +110,7 @@
 
                 void IRecognitionListener.OnEvent(int eventType, Bundle @params) { }
 
-                void IRecognitionListener.OnPartialResults(Bundle partialResults) 
+                void IRecognitionListener.OnPartialResults(Bundle partialResults)
                 {
                     var text = GetPlainText(partialResults);
                     if (!string.IsNullOrEmpty(text)) Detected?.Invoke(text);

@@ -1,7 +1,7 @@
 ﻿namespace Zebble.Device
 {
-    using AVFoundation;
     using System.Threading.Tasks;
+    using AVFoundation;
     using Olive;
 
     public partial class Speech
@@ -36,14 +36,9 @@
         /// </summary>
         static float GetNormalizedSpeed(float speed)
         {
-            if (speed == 1)
-                return 0.5F;
-
-            else if (speed < 1)
-                return speed / 2;
-
-            else
-                return 0.5F + speed / 20;
+            if (speed == 1) return 0.5F;
+            else if (speed < 1) return speed / 2;
+            else return 0.5F + speed / 20;
         }
 
         static void OnFinishedSpeechUtterance(object sender, AVSpeechSynthesizerUteranceEventArgs args)
@@ -51,9 +46,6 @@
             SpeechInProgress?.TrySetResult(false);
         }
 
-        static void DoStop()
-        {
-            SpeechSynthesizer.StopSpeaking(AVSpeechBoundary.Word);
-        }
+        static void DoStop() => SpeechSynthesizer.StopSpeaking(AVSpeechBoundary.Word);
     }
 }

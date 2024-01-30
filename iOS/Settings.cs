@@ -1,8 +1,8 @@
 ﻿namespace Zebble.Device
 {
+    using System.Linq;
     using AVFoundation;
     using Olive;
-    using System.Linq;
 
     partial class Speech
     {
@@ -10,7 +10,7 @@
         {
             internal AVSpeechSynthesisVoice GetVoiceForLocaleLanguage()
             {
-                var language = Language.GetInstalledLanguages().FirstOrDefault(x => x.Id.StartsWith(Language?.Id,false))?.Id ?? AVSpeechSynthesisVoice.CurrentLanguageCode;
+                var language = Language.GetInstalledLanguages().FirstOrDefault(x => x.Id.StartsWith(Language?.Id, false))?.Id ?? AVSpeechSynthesisVoice.CurrentLanguageCode;
 
                 var voice = AVSpeechSynthesisVoice.FromLanguage(language);
                 if (voice != null) return voice;

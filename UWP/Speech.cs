@@ -11,7 +11,6 @@
         static SpeechSynthesizer Synthesizer = new SpeechSynthesizer();
         static MediaPlayer Player = new MediaPlayer();
 
-
         static async Task DoSpeak(string text, Settings settings)
         {
             Synthesizer.Voice = settings.SelectVoice();

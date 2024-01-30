@@ -16,6 +16,7 @@
                 {
                     recognizer = new Windows.Media.SpeechRecognition.SpeechRecognizer();
                     var result = await recognizer.CompileConstraintsAsync().AsTask();
+
                     if (result.Status != SpeechRecognitionResultStatus.Success)
                         throw new Exception("Failed to start speech recognizer: " + result.Status);
                 }

@@ -1,16 +1,17 @@
 ﻿namespace Zebble.Device
 {
+    using System;
+    using System.Threading.Tasks;
     using AVFoundation;
     using Foundation;
     using global::Speech;
-    using System;
-    using System.Threading.Tasks;
     using Olive;
 
     public partial class Speech
     {
         partial class Recognizer
         {
+            static AVAudioSession Session;
             static SFSpeechRecognizer SpeechRecognizer;
             static AVAudioEngine AudioEngine;
             static SFSpeechAudioBufferRecognitionRequest LiveSpeechRequest;
@@ -21,71 +22,74 @@
                 if (Device.OS.IsBeforeiOS(10))
                     throw new Exception("This feature is not supported in this device. Please upgrade your iOS.");
 
-                SFSpeechRecognizer.RequestAuthorization(status =>
-                {
-                    if (status == SFSpeechRecognizerAuthorizationStatus.Authorized)
-                    {
-                        StopInstances();
-                        StartRecording();
-                    }
-                    else
-                    {
-                        Stop();
-                        throw new Exception("Speech recognition authorization request was denied.");
-                    }
-                });
+                SFSpeechRecognizer.RequestAuthorization(HandleAuthorisationRequest);
 
                 return Task.CompletedTask;
             }
 
+            static void HandleAuthorisationRequest(SFSpeechRecognizerAuthorizationStatus status)
+            {
+                if (status == SFSpeechRecognizerAuthorizationStatus.Authorized)
+                {
+                    StopInstances();
+                    StartRecording();
+                }
+                else
+                {
+                    Stop().GetAwaiter();
+                    throw new Exception("Speech recognition authorization request was denied.");
+                }
+            }
+
             static void StartRecording()
             {
-                SpeechRecognizer = new SFSpeechRecognizer();
+                if (!ConfigureAudioSession()) return;
 
-                if (!SpeechRecognizer.Available)
-                    return;
-
-                if (SFSpeechRecognizer.AuthorizationStatus != SFSpeechRecognizerAuthorizationStatus.Authorized)
-                    return;
-
-                var audioSession = AVAudioSession.SharedInstance();
-                if (audioSession is null)
-                    return;
-                
-                audioSession.SetCategory(AVAudioSessionCategory.PlayAndRecord);
-                audioSession.SetMode(AVAudioSession.ModeDefault, out NSError error);
-                audioSession.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out NSError speakerError);
-                audioSession.SetActive(true);
-
-                if (LogErrorAndStop(error) || LogErrorAndStop(speakerError))
-                    return;
+                SpeechRecognizer ??= new SFSpeechRecognizer();
+                if (!SpeechRecognizer.Available) return;
 
                 AudioEngine = new AVAudioEngine();
-                var node = AudioEngine.InputNode;
-                if (node is null) return;
+                AudioEngine.InputNode?.InstallTapOnBus(0, 1024, AudioEngine.InputNode.GetBusOutputFormat(0), (buffer, when) => LiveSpeechRequest?.Append(buffer));
 
-                var recordingFormat = node.GetBusOutputFormat(0);
-
-                node.InstallTapOnBus(0, 1024, recordingFormat, (buffer, when) =>
-                {
-                    LiveSpeechRequest?.Append(buffer);
-                });
-
-                LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest
-                {
-                    ShouldReportPartialResults = true
-                };
-
-                RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, (result, err) =>
-                {
-                    if (LogErrorAndStop(err)) return;
-                    Detected?.Invoke(result.BestTranscription.FormattedString);
-                });
-
+                LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest { ShouldReportPartialResults = true };
+                RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, OnRecognitionTaskResult);
                 AudioEngine.Prepare();
-                AudioEngine.StartAndReturnError(out error);
+                AudioEngine.StartAndReturnError(out var error);
+                if (error != null) Log.For(typeof(Recognizer)).Error(error.ToString());
+            }
 
-                if (LogErrorAndStop(error)) return;
+            static void OnRecognitionTaskResult(SFSpeechRecognitionResult result, NSError error)
+            {
+                if (error is null)
+                    Detected?.Invoke(result.BestTranscription.FormattedString);
+                else
+                    Log.For(typeof(Recognizer)).Error(error.ToString());
+            }
+
+            static bool ConfigureAudioSession()
+            {
+                Session = AVAudioSession.SharedInstance();
+                if (Session is null) return false;
+
+                Session.SetCategory(AVAudioSessionCategory.PlayAndRecord);
+                Session.SetMode(AVAudioSession.ModeDefault, out var error);
+
+                if (error != null)
+                {
+                    Log.For(typeof(Recognizer)).Error(error.ToString());
+                    return false;
+                }
+
+                Session.OverrideOutputAudioPort(AVAudioSessionPortOverride.Speaker, out error);
+
+                if (error != null)
+                {
+                    Log.For(typeof(Recognizer)).Error(error.ToString());
+                    return false;
+                }
+
+                Session.SetActive(true);
+                return true;
             }
 
             static Task DoStop()
@@ -99,6 +103,9 @@
 
             static void StopInstances()
             {
+                Session?.Dispose();
+                Session = null;
+
                 AudioEngine?.InputNode?.RemoveTapOnBus(0);
                 AudioEngine?.Stop();
                 AudioEngine?.Dispose();
@@ -115,16 +122,6 @@
                 RecognitionTask?.Finish();
                 RecognitionTask?.Dispose();
                 RecognitionTask = null;
-            }
-
-            static bool LogErrorAndStop(NSError error)
-            {
-                if (error != null)
-                {
-                    Log.For(typeof(Recognizer)).Error(error.ToString());
-                    return true;
-                }
-                return false;
             }
         }
     }

@@ -11,6 +11,7 @@
             internal string GetPitchProsody()
             {
                 if (Pitch == 1) return "default";
+
                 if (Pitch >= 1.6f) return "x-high";
                 else if (Pitch >= 1.1f) return "high";
                 else if (Pitch >= .9f) return "medium";
@@ -20,9 +21,9 @@
 
             internal VoiceInformation SelectVoice()
             {
-                return SpeechSynthesizer.AllVoices.OrderByDescending(x => x.Language.StartsWith(Language?.LanguageCode,false))
-                    .ThenByDescending(x=>x.Language.Contains(Language.CountryCode,false))
-                    .ThenByDescending(x=>x== SpeechSynthesizer.DefaultVoice)
+                return SpeechSynthesizer.AllVoices.OrderByDescending(x => x.Language.StartsWith(Language?.LanguageCode, false))
+                    .ThenByDescending(x => x.Language.Contains(Language.CountryCode, false))
+                    .ThenByDescending(x => x == SpeechSynthesizer.DefaultVoice)
                     .FirstOrDefault()
                      ?? SpeechSynthesizer.DefaultVoice;
             }

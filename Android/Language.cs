@@ -3,8 +3,8 @@
     using Java.Util;
     using System.Collections.Generic;
     using System.Linq;
-    using  Olive;
-    
+    using Olive;
+
     partial class Speech
     {
         partial class Language
@@ -13,12 +13,12 @@
             {
                 return Locale.GetAvailableLocales()
                   .Where(a => a.Language.HasValue() && a.Country.HasValue() && a.DisplayName.HasValue())
-                  .Select(a => new Language 
-                  { 
-                      Id = a.ToString(), 
-                      LanguageCode= a.Language,
-                      CountryCode=a.Country,
-                      Name = a.DisplayName 
+                  .Select(a => new Language
+                  {
+                      Id = a.ToString(),
+                      LanguageCode = a.Language,
+                      CountryCode = a.Country,
+                      Name = a.DisplayName
                   }
                   )
                   .GroupBy(c => c.Id)
