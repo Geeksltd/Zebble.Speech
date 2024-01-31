@@ -61,7 +61,11 @@
             static void OnRecognitionTaskResult(SFSpeechRecognitionResult result, NSError error)
             {
                 if (error is null)
-                    Detected?.Invoke(result.BestTranscription.FormattedString);
+                {
+                    var heard = result?.BestTranscription?.FormattedString;
+                    if (heard.IsEmpty()) return;
+                    Detected?.Invoke(heard);
+                }
                 else
                     Log.For(typeof(Recognizer)).Error(error.ToString());
             }
