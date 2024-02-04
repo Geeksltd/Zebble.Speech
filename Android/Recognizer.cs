@@ -72,6 +72,11 @@
             {
                 readonly object SyncLock = new object();
 
+                public RecognitionListener() { }
+
+                [Preserve]
+                public RecognitionListener(IntPtr ptr, JniHandleOwnership handle) : base(ptr, handle) { }
+
                 public void OnResults(Bundle results)
                 {
                     var text = GetPlainText(results);
