@@ -77,11 +77,11 @@
             {
             }
 
-            public override void OnDone(string utteranceId) => SpeechInProgress.TrySetResult(true);
+            public override void OnDone(string utteranceId) => SpeechInProgress?.TrySetResult(true);
 
             public override void OnError(string utteranceId)
             {
-                SpeechInProgress.TrySetResult(false);
+                SpeechInProgress?.TrySetResult(false);
                 Log.For(typeof(Speech)).Error($"Error in text-to-speech engine when listening to progress. [{utteranceId}]");
             }
         }
