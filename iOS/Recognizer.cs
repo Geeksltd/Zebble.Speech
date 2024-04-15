@@ -45,7 +45,7 @@
             {
                 if (!ConfigureAudioSession()) return;
 
-                SpeechRecognizer ??= new SFSpeechRecognizer();
+                SpeechRecognizer ??= new SFSpeechRecognizer(new NSLocale(Accent));
                 if (!SpeechRecognizer.Available) return;
 
                 AudioEngine = new AVAudioEngine();

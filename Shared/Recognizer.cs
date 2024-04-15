@@ -9,8 +9,9 @@
         {
             public static Action<string> Detected;
             public static Action Stopped;
+            static string Accent { get; set; }
 
-            public static async Task<bool> Start(Action<string> listener, OnError errorAction = OnError.Alert)
+            public static async Task<bool> Start(Action<string> listener, string accent = "gb", OnError errorAction = OnError.Alert)
             {
                 try { await Stop(); } catch { /* No logging is needed. */ }
 
@@ -18,6 +19,8 @@
                 {
                     if (!await Permission.Speech.IsRequestGranted())
                         throw new Exception("Request was denied to access Speech Recognition.");
+
+                    Accent = accent == "gb" ? "en-GB" : "en-US";
 
                     await Thread.UI.Run(DoStart);
                     Detected += listener;
