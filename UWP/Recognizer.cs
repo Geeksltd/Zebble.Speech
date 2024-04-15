@@ -14,7 +14,7 @@
             {
                 if (recognizer == null)
                 {
-                    recognizer = new Windows.Media.SpeechRecognition.SpeechRecognizer();
+                    recognizer = new Windows.Media.SpeechRecognition.SpeechRecognizer(new Windows.Globalization.Language(Accent));
                     var result = await recognizer.CompileConstraintsAsync().AsTask();
 
                     if (result.Status != SpeechRecognitionResultStatus.Success)

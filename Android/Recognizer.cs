@@ -36,7 +36,7 @@
             {
                 VoiceIntent = new Intent(RecognizerIntent.ActionRecognizeSpeech);
                 VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguagePreference, Java.Util.Locale.English);
-                VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguage, Java.Util.Locale.English);
+                VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguage, Accent);
                 VoiceIntent.PutExtra(RecognizerIntent.ExtraLanguageModel, RecognizerIntent.LanguageModelFreeForm);
                 VoiceIntent.PutExtra(RecognizerIntent.ExtraCallingPackage, Application.Context.PackageName);
                 VoiceIntent.PutExtra(RecognizerIntent.ExtraSpeechInputCompleteSilenceLengthMillis, 15000);
