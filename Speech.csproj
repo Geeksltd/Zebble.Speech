@@ -6,7 +6,7 @@
     <RootNamespace>Zebble</RootNamespace>
     <PackageId>Zebble.Speech</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>2.0.2.0</Version>
+    <Version>2.0.3.0</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <DefineConstants>$(DefineConstants)</DefineConstants>
@@ -68,7 +68,7 @@
   <ItemGroup>
     <PackageReference Include="Zebble" Version="5.0.0" />
   </ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="update-local-nuget-cache $(TargetDir)" />
-	</Target>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="update-local-nuget-cache $(TargetDir)" />
+  </Target>
 </Project>
