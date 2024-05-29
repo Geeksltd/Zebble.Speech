@@ -72,11 +72,11 @@
 
             static bool ConfigureAudioSession()
             {
-                Session = AVAudioSession.SharedInstance();
+                Session ??= AVAudioSession.SharedInstance();
                 if (Session is null) return false;
 
                 Session.SetCategory(AVAudioSessionCategory.PlayAndRecord);
-                Session.SetMode(AVAudioSession.ModeDefault, out var error);
+                Session.SetMode(AVAudioSessionMode.Default, out var error);
 
                 if (error != null)
                 {
@@ -107,8 +107,10 @@
 
             static void StopInstances()
             {
-                Session?.Dispose();
-                Session = null;
+                // Session shouldn't be disposed as it's a shared instance.
+                // I found no recommendation on Apple's documentation
+                // Session?.Dispose();
+                // Session = null;
 
                 AudioEngine?.InputNode?.RemoveTapOnBus(0);
                 AudioEngine?.Stop();

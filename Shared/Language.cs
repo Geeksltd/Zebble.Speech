@@ -7,7 +7,7 @@
     {
         public partial class Language
         {
-            static List<Language> InstalledLanguages;
+            static Language[] InstalledLanguages;
 
             public string Id { get; internal set; }
             public string Name { get; internal set; }
@@ -32,9 +32,7 @@
 
             public static IEnumerable<Language> GetInstalledLanguages()
             {
-                if (InstalledLanguages != null) return InstalledLanguages;
-
-                return InstalledLanguages = FindInstalledLanguages().ToList();
+                return InstalledLanguages ??= [.. FindInstalledLanguages()];
             }
         }
     }

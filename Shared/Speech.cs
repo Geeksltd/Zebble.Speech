@@ -14,6 +14,7 @@
         public static async Task Speak(string text, Settings settings = null, OnError errorAction = OnError.Toast)
         {
             if (text.IsEmpty()) return;
+
             settings ??= new Settings();
             settings.Volume = settings.Volume.LimitWithin(0, 1);
 
@@ -29,13 +30,13 @@
             catch (Exception ex)
             {
                 await errorAction.Apply(ex, "Failed to run Text to Speech.");
+                SpeechInProgress?.TrySetResult(false);
             }
         }
 
         public static void Stop()
         {
             DoStop();
-
             SpeechInProgress?.TrySetResult(false);
         }
     }
