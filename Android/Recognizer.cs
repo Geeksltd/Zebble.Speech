@@ -22,7 +22,7 @@
                 if (AndroidRecognizer == null)
                 {
                     StandardListener = new RecognitionListener();
-                    AndroidRecognizer = SpeechRecognizer.CreateSpeechRecognizer(UIRuntime.NativeRootScreen as AndroidOS.BaseActivity);
+                    AndroidRecognizer = SpeechRecognizer.CreateSpeechRecognizer(UIRuntime.CurrentActivity);
                     AndroidRecognizer.SetRecognitionListener(StandardListener);
                     AndroidRecognizer.StartListening(CreateIntent());
 
