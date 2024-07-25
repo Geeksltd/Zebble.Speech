@@ -48,12 +48,13 @@
                 SpeechRecognizer ??= new SFSpeechRecognizer(new NSLocale(Accent));
                 if (!SpeechRecognizer.Available) return;
 
-                AudioEngine = new AVAudioEngine();
-                AudioEngine.InputNode?.InstallTapOnBus(0, 1024, AudioEngine.InputNode.GetBusOutputFormat(0), (buffer, when) => LiveSpeechRequest?.Append(buffer));
+                AudioEngine ??= new AVAudioEngine();
+
+                if (AudioEngine.InputNode == null) return;
+                AudioEngine.InputNode.InstallTapOnBus(0, 1024, AudioEngine.InputNode.GetBusOutputFormat(0), (buffer, when) => LiveSpeechRequest?.Append(buffer));
 
                 LiveSpeechRequest = new SFSpeechAudioBufferRecognitionRequest { ShouldReportPartialResults = true };
                 RecognitionTask = SpeechRecognizer.GetRecognitionTask(LiveSpeechRequest, OnRecognitionTaskResult);
-                AudioEngine.Prepare();
                 AudioEngine.StartAndReturnError(out var error);
                 if (error != null) Log.For(typeof(Recognizer)).Error(error.ToString());
             }
@@ -114,8 +115,6 @@
 
                 AudioEngine?.InputNode?.RemoveTapOnBus(0);
                 AudioEngine?.Stop();
-                AudioEngine?.Dispose();
-                AudioEngine = null;
 
                 LiveSpeechRequest?.EndAudio();
                 LiveSpeechRequest?.Dispose();
